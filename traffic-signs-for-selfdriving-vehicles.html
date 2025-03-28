@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚦 Traffic Sign Recognition</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 20px; }
+        input, button { margin: 10px; padding: 8px; font-size: 16px; }
+        img { max-width: 300px; margin-top: 10px; border: 2px solid #ddd; padding: 5px; }
+        #result { font-size: 20px; margin-top: 10px; }
+        table { width: 80%; margin: 20px auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h1>🚦 Traffic Sign Recognition</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <br>
+    <img id="preview" src="" alt="Image Preview" style="display: none;">
+    <br>
+    <button onclick="predict()">Predict</button>
+    <p id="result"></p>
+
+    <h2>📋 Traffic Sign Classes</h2>
+    <table>
+        <tr><th>Class</th><th>Description</th></tr>
+        <tr><td>0</td><td>Give way</td></tr>
+        <tr><td>1</td><td>No entry</td></tr>
+        <tr><td>2</td><td>One-way traffic</td></tr>
+        <tr><td>3</td><td>One-way traffic</td></tr>
+        <tr><td>4</td><td>No vehicles in both directions</td></tr>
+        <tr><td>5</td><td>No entry for cycles</td></tr>
+        <tr><td>6</td><td>No entry for goods vehicles</td></tr>
+        <tr><td>7</td><td>No entry for pedestrians</td></tr>
+        <tr><td>8</td><td>No entry for bullock carts</td></tr>
+        <tr><td>9</td><td>No entry for hand carts</td></tr>
+        <tr><td>10</td><td>No entry for motor vehicles</td></tr>
+        <tr><td>11</td><td>Height limit</td></tr>
+        <tr><td>12</td><td>Weight limit</td></tr>
+        <tr><td>13</td><td>Axle weight limit</td></tr>
+        <tr><td>14</td><td>Length limit</td></tr>
+        <tr><td>15</td><td>No left turn</td></tr>
+        <tr><td>16</td><td>No right turn</td></tr>
+        <tr><td>17</td><td>No overtaking</td></tr>
+        <tr><td>18</td><td>Maximum speed limit (90 km/h)</td></tr>
+        <tr><td>19</td><td>Maximum speed limit (110 km/h)</td></tr>
+        <tr><td>20</td><td>Horn prohibited</td></tr>
+        <tr><td>21</td><td>No parking</td></tr>
+        <tr><td>22</td><td>No stopping</td></tr>
+        <tr><td>23</td><td>Turn left</td></tr>
+        <tr><td>24</td><td>Turn right</td></tr>
+        <tr><td>25</td><td>Steep descent</td></tr>
+        <tr><td>26</td><td>Steep ascent</td></tr>
+        <tr><td>27</td><td>Narrow road</td></tr>
+        <tr><td>28</td><td>Narrow bridge</td></tr>
+        <tr><td>29</td><td>Unprotected quay</td></tr>
+        <tr><td>30</td><td>Road hump</td></tr>
+        <tr><td>31</td><td>Dip</td></tr>
+        <tr><td>32</td><td>Loose gravel</td></tr>
+        <tr><td>33</td><td>Falling rocks</td></tr>
+        <tr><td>34</td><td>Cattle</td></tr>
+        <tr><td>35</td><td>Crossroads</td></tr>
+        <tr><td>36</td><td>Side road junction</td></tr>
+        <tr><td>37</td><td>Side road junction</td></tr>
+        <tr><td>38</td><td>Oblique side road junction</td></tr>
+        <tr><td>39</td><td>Oblique side road junction</td></tr>
+        <tr><td>40</td><td>T-junction</td></tr>
+        <tr><td>41</td><td>Y-junction</td></tr>
+        <tr><td>42</td><td>Staggered side road junction</td></tr>
+        <tr><td>43</td><td>Staggered side road junction</td></tr>
+        <tr><td>44</td><td>Roundabout</td></tr>
+        <tr><td>45</td><td>Guarded level crossing ahead</td></tr>
+        <tr><td>46</td><td>Unguarded level crossing ahead</td></tr>
+        <tr><td>47</td><td>Level crossing countdown marker</td></tr>
+        <tr><td>48</td><td>Level crossing countdown marker</td></tr>
+    </table>
+
+    <script>
+        let uploadedImage = null;
+
+        document.getElementById("imageUpload").addEventListener("change", function(event) {
+            let file = event.target.files[0];
+            if (file) {
+                uploadedImage = file;
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById("preview").src = e.target.result;
+                    document.getElementById("preview").style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        async function predict() {
+            if (!uploadedImage) {
+                document.getElementById("result").textContent = "❌ Please upload an image first!";
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("image", uploadedImage);
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/predict", { method: "POST", body: formData });
+                let result = await response.json();
+                document.getElementById("result").textContent = "🚦 Predicted Class: " + result.predicted_class;
+            } catch (error) {
+                document.getElementById("result").textContent = "❌ Server Error!";
+            }
+        }
+    </script>
+</body>
+</html>
